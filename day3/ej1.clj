@@ -1,0 +1,5 @@
+(def test_one "R8,U5,L5,D3,U7,R6,D4,L4")
+(->> (str/split test_one #",")
+     (map asInt)
+     (partition 4)
+     println)
