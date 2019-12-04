@@ -3,8 +3,6 @@
      (str/split-lines test_one)
      (map #(str/split %1 #","))))
 
-;;(println input)
-
 (defn expand_direction [coord idx]
   (let [n (inc (asInt (str/join (rest coord))))]
     (case (first coord)
@@ -15,28 +13,22 @@
       []
     )))
 
-;; (println (last (expand_direction "R988" [1 1])))    
-;; (println (expand_direction "R988" [1 1]))
-
-(defn contiene? [i col]
-  (some #(= i %1) col)
-)
-
 (defn expand_wire [wire_code]
   (let [b (list 0 0)
       coords (list b)]
     (loop [code wire_code idx b res coords]
+      (let [expanded (if (not-empty code) (expand_direction (first code) idx) nil)]
       (if (empty? code)
         res
         (recur (rest code) 
-               (last (expand_direction (first code) idx)) 
-               (concat res (expand_direction (first code) idx)))))))
+               (last expanded) 
+               (concat res expanded)))))))
 
 (def distance #(+ (Math/abs (second %)) (Math/abs (first %))))
 
 (def mesh (map expand_wire input))
 
-(def cross_points (sort-by distance (clojure.set/intersection (set (first mesh)) (set (second mesh)))))
+(def cross_points (rest (sort-by distance (clojure.set/intersection (set (first mesh)) (set (second mesh))))))
 
-(println (distance (second cross_points)))
-(println (take 2 (sort (map #(+ (.indexOf (vec (first mesh)) %1) (.indexOf (vec (second mesh)) %1)) cross_points))))
+(println (distance (first cross_points)))
+(println (reduce min (map #(+ (.indexOf (vec (first mesh)) %1) (.indexOf (vec (second mesh)) %1)) cross_points)))
